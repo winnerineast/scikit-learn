@@ -388,11 +388,11 @@ def _gradient_descent(objective, p0, it, n_iter, objective_error=None,
         new_error, grad = objective(p, *args, **kwargs)
         grad_norm = linalg.norm(grad)
 
-        inc = update * grad >= 0.0
+        inc = update * grad < 0.0
         dec = np.invert(inc)
-        gains[inc] += 0.05
-        gains[dec] *= 0.95
-        np.clip(gains, min_gain, np.inf)
+        gains[inc] += 0.2
+        gains[dec] *= 0.8
+        np.clip(gains, min_gain, np.inf, out=gains)
         grad *= gains
         update = momentum * update - learning_rate * grad
         p += update
@@ -441,7 +441,7 @@ def trustworthiness(X, X_embedded, n_neighbors=5, precomputed=False):
     .. math::
 
         T(k) = 1 - \frac{2}{nk (2n - 3k - 1)} \sum^n_{i=1}
-            \sum_{j \in U^{(k)}_i (r(i, j) - k)}
+            \sum_{j \in U^{(k)}_i} (r(i, j) - k)
 
     where :math:`r(i, j)` is the rank of the embedded datapoint j
     according to the pairwise distances between the embedded datapoints,
@@ -631,10 +631,10 @@ class TSNE(BaseEstimator):
     >>> model = TSNE(n_components=2, random_state=0)
     >>> np.set_printoptions(suppress=True)
     >>> model.fit_transform(X) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-    array([[ 0.00017599,  0.00003993],
-           [ 0.00009891,  0.00021913],
-           [ 0.00018554, -0.00009357],
-           [ 0.00009528, -0.00001407]])
+    array([[ 0.00017619,  0.00004014],
+           [ 0.00010268,  0.00020546],
+           [ 0.00018298, -0.00008335],
+           [ 0.00009501, -0.00001388]])
 
     References
     ----------
